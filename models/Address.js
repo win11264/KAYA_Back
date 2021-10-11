@@ -6,7 +6,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      datail: {
+      detail: {
         type: DataTypes.STRING,
         allowNull: false,
       },

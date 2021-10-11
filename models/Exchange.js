@@ -14,25 +14,22 @@ module.exports = (sequelize, DataTypes) => {
   );
 
   Exchange.associate = (models) => {
-    Exchange.belongsTo(models.User, {
-      foreignKey: {
-        name: "userId",
-        allowNull: false,
-      },
-      onDelete: "RESTRICT",
-      onUpdate: "RESTRICT",
-    });
-  };
-
-  Exchange.associate = (models) => {
     Exchange.hasMany(models.ExchangeItem, {
       foreignKey: {
-        name: "exchangeItemId",
+        name: "exchangeId",
         allowNull: false,
       },
       onDelete: "RESTRICT",
       onUpdate: "RESTRICT",
-    });
+    }),
+      Exchange.belongsTo(models.User, {
+        foreignKey: {
+          name: "userId",
+          allowNull: false,
+        },
+        onDelete: "RESTRICT",
+        onUpdate: "RESTRICT",
+      });
   };
 
   return Exchange;

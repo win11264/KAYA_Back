@@ -13,28 +13,25 @@ module.exports = (sequelize, DataTypes) => {
       amount: {
         type: DataTypes.INTEGER,
         allowNull: false,
+        defaultValue: 0,
       },
 
       sale: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        unique: true,
+        defaultValue: 0,
       },
+
       information: {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true,
-      },
-      information: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        dafaultValue: "",
+        defaultValue: "",
       },
 
       image: {
         type: DataTypes.STRING,
         allowNull: false,
-        dafaultValue: "",
+        defaultValue: "",
       },
     },
     {

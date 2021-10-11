@@ -1,84 +1,82 @@
-const { Waste } = require("../models");
+const { Store } = require("../models");
 
-exports.getAllWastes = async (req, res, next) => {
+exports.getAllStore = async (req, res, next) => {
   try {
-    const wastes = await Waste.findAll();
-    res.json({ wastes });
+    const store = await Store.findAll();
+    res.json({ store });
   } catch (error) {
     next(error);
   }
 };
 
-exports.getWasteById = async (req, res, next) => {
+exports.getStoreById = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const list = await Waste.findOne({ where: { id } });
-    res.json({ list });
-  } catch (err) {
-    next(err);
+    const store = await Store.findOne({ where: { id } });
+    res.json({ store });
+  } catch (error) {
+    next(error);
   }
 };
 
-exports.createWaste = async (req, res, next) => {
+exports.createStore = async (req, res, next) => {
   try {
-    const { name, rate } = req.body;
-
+    const { name, address, contact, hashtag, image } = req.body;
     if (
       req.user.username === "admin01" ||
       req.user.username === "admin02" ||
       req.user.username === "admin03"
     ) {
-      const waste = await Waste.create({
+      const store = await Store.create({
         name,
-        rate,
+        address,
+        contact,
+        hashtag,
+        image,
       });
-      res.status(201).json({ waste });
+      res.status(201).json({ store });
     }
     return res.status(401).json({ message: "you are unauthorized" });
-  } catch (err) {
-    next(err);
+  } catch (error) {
+    next(error);
   }
 };
 
-exports.updateList = async (req, res, next) => {
+exports.updateStore = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const { name, rate } = req.body;
+    const { name, address, contact, hashtag, image } = req.body;
     if (
       req.user.username === "admin01" ||
       req.user.username === "admin02" ||
       req.user.username === "admin03"
     ) {
-      const [rows] = await Waste.update(
-        { name, rate },
-        {
-          where: {
-            id,
-          },
-        }
+      const [rows] = await Store.update(
+        { name, address, contact, hashtag, image },
+        { where: { id } }
       );
       if (rows === 0) {
-        return res.status(400).json({ message: "fail to update waste" });
+        return res.status(400).json({ message: "fail to update store" });
       }
 
-      res.status(200).json({ message: "success update waste" });
+      res.status(200).json({ message: "Successfully update store" });
     }
     return res.status(401).json({ message: "you are unauthorized" });
-  } catch (err) {
-    next(err.message);
+  } catch (error) {
+    next(error);
   }
 };
 
-exports.deleteWaste = async (req, res, next) => {
+exports.deleteStore = async (req, res, next) => {
   try {
     const { id } = req.params;
-    console.log(id);
+
     if (
       req.user.username === "admin01" ||
       req.user.username === "admin02" ||
       req.user.username === "admin03"
     ) {
-      const rows = await Waste.destroy({
+      const rows = await Store.destroy({
         where: {
           id,
         },

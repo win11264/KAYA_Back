@@ -6,6 +6,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false,
       },
+
       address: {
         type: DataTypes.STRING,
         allowNull: false,
@@ -23,7 +24,7 @@ module.exports = (sequelize, DataTypes) => {
       image: {
         type: DataTypes.STRING,
         allowNull: false,
-        dafaultValue: "",
+        defaultValue: "This is image",
       },
     },
     {

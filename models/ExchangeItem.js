@@ -6,21 +6,12 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
-    },
-    {
-      total: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-      },
-    },
-    {
+
       image: {
         type: DataTypes.STRING,
         allowNull: false,
-        defaultValue: "",
       },
     },
-
     {
       underscored: true,
     }
