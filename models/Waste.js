@@ -17,7 +17,7 @@ module.exports = (sequelize, DataTypes) => {
   );
 
   Waste.associate = (models) => {
-    Waste.hasMany(models.ExchangeItem, {
+    Waste.hasMany(models.Exchange, {
       foreignKey: {
         name: "wasteId",
         allowNull: false,

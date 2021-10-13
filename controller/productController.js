@@ -1,4 +1,11 @@
 const { Product } = require("../models");
+const utils = require("util");
+const fs = require("fs");
+const multer = require("multer");
+const cloudinary = require("cloudinary").v2;
+const express = require("express");
+const app = express();
+const uploadPromise = utils.promisify(cloudinary.uploader.upload);
 
 exports.getAllProduct = async (req, res, next) => {
   try {
@@ -23,22 +30,24 @@ exports.createProduct = async (req, res, next) => {
   try {
     const { name, price, amount, information, image, storeId } = req.body;
 
-    if (
-      req.user.username === "admin01" ||
-      req.user.username === "admin02" ||
-      req.user.username === "admin03"
-    ) {
-      const product = await Product.create({
-        name,
-        price,
-        amount,
-        information,
-        image,
-        storeId,
-      });
-      res.status(201).json({ product });
-    }
-    return res.status(401).json({ message: "you are unauthorized" });
+    // if (
+    //   req.user.username === "admin01" ||
+    //   req.user.username === "admin02" ||
+    //   req.user.username === "admin03"
+    // ) {
+    const result = await uploadPromise(req.file.path);
+    const product = await Product.create({
+      name,
+      price: +price,
+      amount: +amount,
+      information,
+      image: result.secure_url,
+      storeId: +storeId,
+    });
+    fs.unlinkSync(req.file.path);
+    res.status(201).json({ product });
+    // }
+    // return res.status(401).json({ message: "you are unauthorized" });
   } catch (err) {
     next(err.message);
   }
@@ -48,26 +57,28 @@ exports.updateProduct = async (req, res, next) => {
   try {
     const { id } = req.params;
     const { name, price, amount, information, image, storeId } = req.body;
-    if (
-      req.user.username === "admin01" ||
-      req.user.username === "admin02" ||
-      req.user.username === "admin03"
-    ) {
-      const [rows] = await Product.update(
-        { name, price, amount, information, image, storeId },
-        {
-          where: {
-            id,
-          },
-        }
-      );
-      if (rows === 0) {
-        return res.status(400).json({ message: "fail to update product" });
+    const result = await uploadPromise(req.file.path);
+    const [rows] = await Product.update(
+      {
+        name,
+        price: +price,
+        amount: +amount,
+        information,
+        image: result.secure_url,
+        storeId: +storeId,
+      },
+      {
+        where: {
+          id,
+        },
       }
-
-      res.status(200).json({ message: "success update product" });
+    );
+    fs.unlinkSync(req.file.path);
+    if (rows === 0) {
+      return res.status(400).json({ message: "fail to update product" });
     }
-    return res.status(401).json({ message: "you are unauthorized" });
+
+    res.status(200).json(result.secure_url);
   } catch (err) {
     next(err.message);
   }

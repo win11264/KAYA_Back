@@ -2,7 +2,21 @@ module.exports = (sequelize, DataTypes) => {
   const Exchange = sequelize.define(
     "Exchange",
     {
-      total: {
+      rate: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+      amount: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+
+      image: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        defaultValue: " ",
+      },
+      value: {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
@@ -14,17 +28,17 @@ module.exports = (sequelize, DataTypes) => {
   );
 
   Exchange.associate = (models) => {
-    Exchange.hasMany(models.ExchangeItem, {
+    Exchange.belongsTo(models.User, {
       foreignKey: {
-        name: "exchangeId",
+        name: "userId",
         allowNull: false,
       },
       onDelete: "RESTRICT",
       onUpdate: "RESTRICT",
     }),
-      Exchange.belongsTo(models.User, {
+      Exchange.belongsTo(models.Waste, {
         foreignKey: {
-          name: "userId",
+          name: "wasteId",
           allowNull: false,
         },
         onDelete: "RESTRICT",

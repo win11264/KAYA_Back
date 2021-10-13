@@ -48,6 +48,10 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         defaultValue: "",
       },
+      address: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
     },
     {
       underscored: true,

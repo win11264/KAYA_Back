@@ -12,10 +12,13 @@ const wasteRoute = require("./route/wasteRoute");
 const errorController = require("./controller/errorController");
 const storeRoute = require("./route/storeRoute");
 const productRoute = require("./route/productRoute");
-const excItemRoute = require("./route/excItemRoute");
+// const excItemRoute = require("./route/excItemRoute");
 const exchangeRoute = require("./route/exchangeRoute");
 const addressRoute = require("./route/addressRoute");
 const userRoute = require("./route/userRoute");
+// const { ExchangeItem } = require("./models");
+const { Product } = require("./models");
+const { Store } = require("./models");
 
 const uploadPromise = utils.promisify(cloudinary.uploader.upload);
 
@@ -27,7 +30,7 @@ app.use("/user", authRoute);
 app.use("/waste", wasteRoute);
 app.use("/store", storeRoute);
 app.use("/product", productRoute);
-app.use("/excitem", excItemRoute);
+// app.use("/excitem", excItemRoute);
 app.use("/exchange", exchangeRoute);
 app.use("/address", addressRoute);
 app.use("/userdetail", userRoute);
@@ -37,48 +40,51 @@ app.use(errorController);
 const upload = multer({
   storage: multer.diskStorage({
     destination: (req, file, cb) => {
-      // console.log(file);
-      cb(null, "public/images");
+      console.log(file);
+      cb(null, "public/image");
     },
     filename: (req, file, cb) => {
       cb(null, new Date().getTime() + "." + file.mimetype.split("/")[1]);
     },
   }),
-  fileFilter: (req, file, cb) => {
-    if (
-      file.mimetype == "image/png" ||
-      file.mimetype == "image/jpg" ||
-      file.mimetype == "image/jpeg"
-    ) {
-      cb(null, true);
-    } else {
-      cb(null, false);
-      return cb(new Error("Only .png, .jpg and .jpeg format allowed!"));
-    }
-  },
 });
 
-app.post(
-  "/upload-to-cloud",
-  upload.single("cloudinput"),
-  async (req, res, next) => {
-    console.log(req.file);
-    const { username, password, email, confirmPassword } = req.body;
+// app.post("/upload", upload.single("thisisinput"), async (req, res, next) => {
+//   const { name, address, contact, hashtag, image } = req.body;
+//   try {
+//     const result = await uploadPromise(req.file.path);
+//     const uploaded = await Store.create({
+//       name,
+//       address,
+//       contact,
+//       hashtag,
+//       image: result.secure_url,
+//     });
+//     fs.unlinkSync(req.file.path);
+//     res.json({ uploaded });
+//   } catch (error) {
+//     next(error);
+//   }
+//   //   try {
+//   //     console.log("request File", req.file.path);
+//   //     cloudinary.uploader.upload(req.file.path, async (err, result) => {
+//   //       if (err) {
+//   //         console.log(err);
+//   //       } else {
+//   //         console.log(result);
+//   //       }
+//   //       fs.unlinkSync(req.file.path);
 
-    try {
-      const result = await uploadPromise(req.file.path);
-      const user = await User.create({
-        username,
-        password: result.secure_url,
-        email,
-      });
-      fs.unlinkSync(req.file.path);
-      res.json({ user });
-    } catch (error) {
-      next(error);
-    }
-  }
-);
+//   //       const uploaded = await ExchangeItem.update(
+//   //         { image: result.secure_url },
+//   //         { where: { id: 1 } }
+//   //       );
+//   //       res.json({ uploaded });
+//   //     });
+//   //   } catch (error) {
+//   //     next(error);
+//   //   }
+// });
 
 const port = process.env.PORT || 8000;
 console.log(process.env.PORT);

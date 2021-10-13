@@ -1,4 +1,32 @@
 const { Exchange, ExchangeItem, Waste } = require("../models");
+const utils = require("util");
+const multer = require("multer");
+const cloudinary = require("cloudinary").v2;
+const fs = require("fs");
+
+const uploadPromise = utils.promisify(cloudinary.uploader.upload);
+
+// Exchange.post(
+//   "/upload-to-cloud",
+//   upload.single("cloudinput"),
+//   async (req, res, next) => {
+//     console.log(req.file);
+//     const { username, password, email, confirmPassword } = req.body;
+
+//     try {
+//       const result = await uploadPromise(req.file.path);
+//       const user = await User.create({
+//         username,
+//         password: result.secure_url,
+//         email,
+//       });
+//       fs.unlinkSync(req.file.path);
+//       res.json({ user });
+//     } catch (error) {
+//       next(error);
+//     }
+//   }
+// );
 
 exports.getAllExchange = async (req, res, next) => {
   try {
@@ -24,20 +52,26 @@ exports.getExchangeById = async (req, res, next) => {
 
 exports.createExchange = async (req, res, next) => {
   try {
-    const {} = req.body;
-    console.log("request body", id);
+    const { wasteId, amount, rate } = req.body;
+    console.log(req.body);
+    console.log(req.file);
+    const result = await uploadPromise(req.file.path);
+    const excItem = await Waste.findOne({ where: { id: wasteId } });
+    if (amount === 0) {
+      return res.status(400).json({ message: "value is not found" });
+    }
 
     const exc = await Exchange.create({
-      total,
-      userId,
-    });
-    const ExcItem = await ExchangeItem.create({
-      amount,
-      exchangeId,
       wasteId,
+      userId: req.user.id,
+      amount,
+      rate,
+      image: result.secure_url,
+      value: rate * amount,
     });
-
-    res.status(201).json({ exc });
+    console.log(req.file);
+    fs.unlinkSync(req.file.path);
+    res.status(201).json({ message: "create Successfully" });
   } catch (error) {
     next(error);
   }

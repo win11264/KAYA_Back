@@ -1,9 +1,21 @@
 const { User } = require("../models");
+const utils = require("util");
+const fs = require("fs");
+const multer = require("multer");
+const cloudinary = require("cloudinary").v2;
+const express = require("express");
+
+const app = express();
+
+const uploadPromise = utils.promisify(cloudinary.uploader.upload);
 
 exports.getAllUser = async (req, res, next) => {
   try {
-    const user = await User.findAll();
-    res.json({ user });
+    const userDetail = await User.findOne({
+      where: { username: req.user.username },
+    });
+
+    res.json({ userDetail });
   } catch (error) {
     next(error);
   }
@@ -21,26 +33,30 @@ exports.getUserById = async (req, res, next) => {
 
 exports.updateUser = async (req, res, next) => {
   try {
+    console.log(req.user);
     const { id } = req.params;
-    const {
-      firstName,
-      lastName,
-      birthDate,
-      email,
-      mobileNo,
-      username,
-      password,
-    } = req.body;
+    const { firstName, lastName, birthDate, email, mobileNo, image, address } =
+      req.body;
 
+    const result = await uploadPromise(req.file.path);
     const [rows] = await User.update(
-      { firstName, lastName, birthDate, email, mobileNo, username },
-      { where: { id } }
+      {
+        firstName,
+        lastName,
+        birthDate,
+        email,
+        mobileNo,
+        address,
+        image: result.secure_url,
+      },
+      { where: { id: req.user.id } }
     );
+    fs.unlinkSync(req.file.path);
     if (rows === 0) {
       return res.status(400).json({ message: "fail to update user" });
     }
 
-    res.status(200).json({ message: "Successfully update user" });
+    res.status(200).json(result.secure_url);
   } catch (error) {
     next(error);
   }
