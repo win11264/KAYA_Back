@@ -40,7 +40,7 @@ module.exports = (sequelize, DataTypes) => {
   );
 
   Product.associate = (models) => {
-    Product.hasMany(models.TransactionItem, {
+    Product.hasMany(models.Transaction, {
       foreignKey: {
         name: "productId",
         allowNull: false,
