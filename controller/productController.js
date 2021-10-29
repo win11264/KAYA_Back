@@ -1,15 +1,18 @@
-const { Product } = require("../models");
+const { Product, Transaction } = require("../models");
 const utils = require("util");
 const fs = require("fs");
 const multer = require("multer");
 const cloudinary = require("cloudinary").v2;
 const express = require("express");
+
 const app = express();
 const uploadPromise = utils.promisify(cloudinary.uploader.upload);
 
 exports.getAllProduct = async (req, res, next) => {
   try {
     const product = await Product.findAll();
+
+    // totalStock = product.Transaction.reduce
     res.json({ product });
   } catch (err) {
     next(err);
@@ -20,6 +23,7 @@ exports.getProductById = async (req, res, next) => {
   try {
     const { id } = req.params;
     const product = await Product.findOne({ where: { id } });
+
     res.json({ product });
   } catch (err) {
     next(err);
@@ -29,7 +33,7 @@ exports.getProductById = async (req, res, next) => {
 exports.createProduct = async (req, res, next) => {
   try {
     const { name, price, amount, information, image, storeId } = req.body;
-
+    console.log(storeId);
     // if (
     //   req.user.username === "admin01" ||
     //   req.user.username === "admin02" ||

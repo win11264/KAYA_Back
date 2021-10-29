@@ -30,9 +30,7 @@ const uploadPromise = utils.promisify(cloudinary.uploader.upload);
 
 exports.getAllExchange = async (req, res, next) => {
   try {
-    const exc = await Exchange.findAll({
-      include: { model: ExchangeItem, require: true },
-    });
+    const exc = await Exchange.findAll({ where: { userId: req.user.id } });
     res.json({ exc });
   } catch (error) {
     next(error);

@@ -36,10 +36,11 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       underscored: true,
+      paranoid: true,
     }
   );
 
-  Product.associate = (models) => {
+  Product.associate = models => {
     Product.hasMany(models.Transaction, {
       foreignKey: {
         name: "productId",
@@ -48,9 +49,7 @@ module.exports = (sequelize, DataTypes) => {
       onDelete: "RESTRICT",
       onUpdate: "RESTRICT",
     });
-  };
 
-  Product.associate = (models) => {
     Product.belongsTo(models.Store, {
       foreignKey: {
         name: "storeId",

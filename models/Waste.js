@@ -13,10 +13,11 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       underscored: true,
+      paranoid: true,
     }
   );
 
-  Waste.associate = (models) => {
+  Waste.associate = models => {
     Waste.hasMany(models.Exchange, {
       foreignKey: {
         name: "wasteId",

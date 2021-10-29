@@ -58,7 +58,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   );
 
-  User.associate = (models) => {
+  User.associate = models => {
     User.hasMany(models.Address, {
       foreignKey: {
         name: "userId",
@@ -67,9 +67,7 @@ module.exports = (sequelize, DataTypes) => {
       onDelete: "RESTRICT",
       onUpdate: "RESTRICT",
     });
-  };
 
-  User.associate = (models) => {
     User.hasMany(models.Exchange, {
       foreignKey: {
         name: "userId",
@@ -78,9 +76,7 @@ module.exports = (sequelize, DataTypes) => {
       onDelete: "RESTRICT",
       onUpdate: "RESTRICT",
     });
-  };
 
-  User.associate = (models) => {
     User.hasMany(models.Transaction, {
       foreignKey: {
         name: "userId",

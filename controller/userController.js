@@ -1,4 +1,4 @@
-const { User } = require("../models");
+const { User, Transaction, Exchange, Sequelize } = require("../models");
 const utils = require("util");
 const fs = require("fs");
 const multer = require("multer");
@@ -14,11 +14,47 @@ exports.getAllUser = async (req, res, next) => {
     const userDetail = await User.findOne({
       where: { username: req.user.username },
     });
-
+    console.log("--- userDetail ---", userDetail);
     res.json({ userDetail });
   } catch (error) {
     next(error);
   }
+};
+
+exports.getUser = async (req, res, next) => {
+  try {
+    const userBalance = await User.findOne({
+      where: { id: req.user.id },
+      include: [
+        {
+          model: Transaction,
+          attributes: ["value"],
+        },
+        {
+          model: Exchange,
+          attributes: ["value"],
+        },
+      ],
+    });
+
+    console.log(JSON.stringify(userBalance.Exchanges, null, 2));
+
+    const totalExc = userBalance.Exchanges.reduce(
+      (prv, curr) => prv + curr.value,
+      0
+    );
+
+    const totalTrans = userBalance.Transactions.reduce(
+      (prv, curr) => prv + curr.value,
+      0
+    );
+
+    userBalance.balance = totalExc - totalTrans;
+
+    console.log(userBalance.balance);
+
+    res.status(200).json({ userBalance });
+  } catch (error) {}
 };
 
 exports.getUserById = async (req, res, next) => {
@@ -35,28 +71,37 @@ exports.updateUser = async (req, res, next) => {
   try {
     console.log(req.user);
     const { id } = req.params;
-    const { firstName, lastName, birthDate, email, mobileNo, image, address } =
+    const { firstName, lastName, birthDate, email, mobileNo, address } =
       req.body;
 
-    const result = await uploadPromise(req.file.path);
-    const [rows] = await User.update(
-      {
-        firstName,
-        lastName,
-        birthDate,
-        email,
-        mobileNo,
-        address,
-        image: result.secure_url,
-      },
-      { where: { id: req.user.id } }
-    );
-    fs.unlinkSync(req.file.path);
+    let result;
+
+    if (req.file) {
+      result = await uploadPromise(req.file.path);
+    }
+
+    const user = await User.findOne({ where: { id: req.user.id } });
+    user.firstName = firstName;
+    user.lastName = lastName;
+    user.birthDate = birthDate;
+    user.email = email;
+    user.mobileNo = mobileNo;
+    user.address = address;
+    console.log(`req.file`, req.file);
+    if (req.file) {
+      user.image = result.secure_url;
+    }
+
+    const rows = await user.save();
+
+    console.log("-----rows", rows);
+
+    if (req.file) fs.unlinkSync(req.file.path);
     if (rows === 0) {
       return res.status(400).json({ message: "fail to update user" });
     }
 
-    res.status(200).json(result.secure_url);
+    res.status(200).json(rows);
   } catch (error) {
     next(error);
   }

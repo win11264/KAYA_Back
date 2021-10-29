@@ -1,5 +1,5 @@
 // const { sequelize } = require("./models");
-// sequelize.sync({ force: false });
+// sequelize.sync({ alter: true });
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
@@ -19,12 +19,14 @@ const userRoute = require("./route/userRoute");
 // const { ExchangeItem } = require("./models");
 const { Product } = require("./models");
 const { Store } = require("./models");
+const transactionRoute = require("./route/transactionRoute");
 
 const uploadPromise = utils.promisify(cloudinary.uploader.upload);
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+// app.use();
 app.use("/public", express.static("public"));
 app.use("/user", authRoute);
 app.use("/waste", wasteRoute);
@@ -34,6 +36,7 @@ app.use("/product", productRoute);
 app.use("/exchange", exchangeRoute);
 app.use("/address", addressRoute);
 app.use("/userdetail", userRoute);
+app.use("/transaction", transactionRoute);
 
 app.use(errorController);
 
@@ -57,7 +60,7 @@ const upload = multer({
 //       name,
 //       address,
 //       contact,
-//       hashtag,
+//       hashtag,npm start
 //       image: result.secure_url,
 //     });
 //     fs.unlinkSync(req.file.path);

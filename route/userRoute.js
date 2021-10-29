@@ -17,12 +17,15 @@ const upload = multer({
   }),
 });
 
-router.get(
-  "/",
-  authenticate,
-  upload.single("thisisinput"),
-  userController.getAllUser
-);
+// router.get(
+//   "/",
+//   authenticate,
+//   upload.single("thisisinput"),
+//   userController.getAllUser
+// );
+
+router.get("/", authenticate, userController.getUser);
+
 router.get(
   "/:id",
   authenticate,

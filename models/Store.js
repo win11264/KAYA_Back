@@ -29,10 +29,11 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       underscored: true,
+      paranoid: true,
     }
   );
 
-  Store.associate = (models) => {
+  Store.associate = models => {
     Store.hasMany(models.Product, {
       foreignKey: {
         name: "storeId",
